@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Ceasar coder-decoder</title>
+	<link rel="stylesheet" type="text/css" href="../assets/css/reset.css">
+	<link rel="stylesheet" type="text/css" href="../assets/css/cesar.css">
+</head>
+<body>
+
+<div class="main-container" id="vue-mount">
+	<h1 class="main-title">Ceasar cipher tool</h1>
+
+	<label for="decoded">Decoded text</label>
+	<textarea v-model="decoded" id="decoded"></textarea>
+	<label for="encoded">Encoded text</label>
+	<textarea v-model="encoded" id="encoded"></textarea>
+
+	<span style="font-size: 1.2em;">Please select your offset: </span>
+	<div class="select-container">
+		<select v-model="offset">
+			<option v-for="number in 25" v-text="number"></option>
+		</select>
+	</div>
+
+	<button type="button" v-show="encoded.length == 0 && decoded.length > 0" @click="encode">Encode</button>
+	<button type="button" v-show="decoded.length == 0 && encoded.length > 0" @click="decode">Decode</button>
+	<p class="warning" v-if="decoded.length > 0 && encoded.length > 0">
+		Please enter only content for coding or decoding
+	</p>
+</div>
+
+<script type="text/javascript" src="../assets/js/vue.js"></script>
+<script type="text/javascript">
+	var vm = new Vue({
+		el: '#vue-mount',
+
+		data: {
+			decoded: '',
+			encoded: '',
+			offset: 1
+		},
+
+		methods: {
+			encode() {
+				var self = this;
+				var upperDecoded = self.decoded.toUpperCase();
+				var decodedLetterArray = upperDecoded.split("");
+				var encodedLetterArray = [];
+
+				decodedLetterArray.forEach(function (letter, index) {
+					var unicode = letter.charCodeAt();
+					if(unicode > 64 && unicode < 91) {
+						unicode += parseInt(self.offset);
+					 	encodedLetterArray[index] = unicode < 91 ? String.fromCharCode(unicode) : String.fromCharCode(unicode - 26);
+					} else {
+						encodedLetterArray[index] = String.fromCharCode(unicode);
+					}
+				});
+
+				self.encoded = encodedLetterArray.join("");
+			},
+
+			decode() {
+				var self = this;
+				var upperEncoded = self.encoded.toUpperCase();
+				var encodedLetterArray = upperEncoded.split("");
+				var decodedLetterArray = [];
+
+				encodedLetterArray.forEach(function (letter, index) {
+					var unicode = letter.charCodeAt();
+					if(unicode > 64 && unicode < 91) {
+						unicode -= parseInt(self.offset);
+					 	decodedLetterArray[index] = unicode > 64 ? String.fromCharCode(unicode) : String.fromCharCode(unicode + 26);
+					} else {
+						decodedLetterArray[index] = String.fromCharCode(unicode);
+					}
+				});
+
+				self.decoded = decodedLetterArray.join("");
+			}
+		}
+	})
+</script>
+</body>
+</html>

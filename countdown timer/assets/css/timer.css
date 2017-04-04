@@ -1,0 +1,24 @@
+.timer-container {
+	max-width: 960px;
+	margin: 0 auto;
+	cursor: pointer;
+}
+
+.counter {
+	font-family: Lato, sans-serif;
+	font-size: 12em;
+}
+
+.major {
+	margin-left: 42px;
+}
+
+.marker {
+	padding-top: 42px;
+	font-family: Lato, sans-serif;
+	font-size: 8em;
+}
+
+.unsure {
+	color: rgba(0, 0, 0, .6);
+}

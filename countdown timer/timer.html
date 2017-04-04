@@ -2,67 +2,47 @@
 <html>
 <head>
 	<title>Timer</title>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:100">
 	<link rel="stylesheet" type="text/css" href="assets/css/bulma.min.css">
-	<style type="text/css">
-		@import url('https://fonts.googleapis.com/css?family=Lato:100');
-
-		.container {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			font-family: 'Lato', sans-serif;
-		}
-
-		.input-container {
-			cursor: pointer;
-		}
-
-		.unsure {
-			color: #D3D3D3;
-		}
-
-		.time-counter {
-			font-size: 160px;
-		}
-
-		.time-marker {
-			font-size: 96px;
-			font-weight: 500;
-			margin-right: 20px;
-		}
-
-		.button-container {
-			align-self: flex-end;
-		}
-
-		.timer-input {
-			position: absolute;
-			top: 0;
-			left: 0;
-			border: none;
-			color: white;
-		}
-
-		.timer-input:focus {
-			outline: none;
-		}
-
-		.pointer {
-			border-right: solid 1px black;
-		}
-
-		#startButton {
-			height: 40px;
-			width: 400px;
-		}
-
-		#resetButton {
-
-		}
-	</style>
+	<link rel="stylesheet" type="text/css" href="assets/css/timer.css">
 </head>
 <body>
-	<div class="container is-fullwidth">
+	<section class="hero is-primary is-bold">
+		<div class="hero-body">
+			<div class="container has-text-centered">
+				<h1 class="title">Simple countdown</h1>
+			</div>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="container">
+			<div class="level timer-container" id="timerContainer">
+				<div class="level-item">
+					<span class="counter major" style="margin-left: 0;">0</span>
+				</div>
+				<div class="level-item">
+					<span class="counter minor">0</span>
+					<span class="marker">h</span>
+				</div>
+				<div class="level-item">
+					<span class="counter major">0</span>
+				</div>
+				<div class="level-item">
+					<span class="counter minor">0</span>
+					<span class="marker">m</span>
+				</div>
+				<div class="level-item">
+					<span class="counter major">0</span>
+				</div>
+				<div class="level-item">
+					<span class="counter minor">0</span>
+					<span class="marker">s</span>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- <div class="container is-fullwidth">
 		<div class="input-container" id="timers">
 			<span id="major-hours-counter" class="time-counter">0</span><span id="minor-hours-counter" class="time-counter">0</span>
 			<span class="time-marker">h</span>
@@ -76,14 +56,14 @@
 			<button id="resetButton">Reset</button>
 			<input type="text" class="timer-input" id="timeInput" name="timer-input">
 		</div>
-	</div>
+	</div> -->
 
 	<script type="text/javascript">
 
 		window.onload = function () {
-			var timerContainer = document.getElementById('timers');
+			var timerContainer = document.getElementById('timerContainer');
 			var timeInput = document.getElementById('timeInput');
-			var timers = document.getElementsByClassName('time-counter');
+			var timers = document.getElementsByClassName('counters');
 			var markers = document.getElementsByClassName('time-marker');
 
 			timerContainer.addEventListener('click', function () {

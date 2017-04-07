@@ -2,11 +2,14 @@
 	max-width: 960px;
 	margin: 0 auto;
 	cursor: pointer;
+	margin-bottom: 0 !important;
+	-webkit-user-select: none;
 }
 
 .counter {
 	font-family: Lato, sans-serif;
 	font-size: 12em;
+	transition: color .5s;
 }
 
 .major {
@@ -14,11 +17,50 @@
 }
 
 .marker {
-	padding-top: 42px;
+	padding-top: 50px;
 	font-family: Lato, sans-serif;
 	font-size: 8em;
+	transition: color .5s;
 }
 
 .unsure {
-	color: rgba(0, 0, 0, .6);
+	color: #D3D3D3;
+}
+
+.pointer::after {
+	content:  '';
+	border-right: 1px solid black;
+}
+
+.progress-container {
+	max-width: 960px;
+	margin: 0 auto;
+}
+
+.progress::-webkit-progress-bar {
+	background-color: rgba(219, 219, 219, .2);
+}
+
+.button-container {
+	max-width: 800px;
+	margin: 0 auto;
+	margin-top: 50px;
+}
+
+.button {
+	min-width: 200px;
+	font-family: Lato, sans-serif;
+	font-weight: 600;
+}
+
+.timer-input {
+	position: absolute;
+	top: 0;
+	left: 0;
+	border: none;
+	color: white;
+}
+
+.timer-input:focus {
+	outline: none;
 }

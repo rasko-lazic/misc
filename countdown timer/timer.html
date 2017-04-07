@@ -19,64 +19,69 @@
 		<div class="container">
 			<div class="level timer-container" id="timerContainer">
 				<div class="level-item">
-					<span class="counter major" style="margin-left: 0;">0</span>
+					<span class="counter major" id="majorHoursCounter" style="margin-left: 0;">0</span>
 				</div>
 				<div class="level-item">
-					<span class="counter minor">0</span>
+					<span class="counter minor" id="minorHoursCounter">0</span>
 					<span class="marker">h</span>
 				</div>
 				<div class="level-item">
-					<span class="counter major">0</span>
+					<span class="counter major" id="majorMinutesCounter">0</span>
 				</div>
 				<div class="level-item">
-					<span class="counter minor">0</span>
+					<span class="counter minor" id="minorMinutesCounter">0</span>
 					<span class="marker">m</span>
 				</div>
 				<div class="level-item">
-					<span class="counter major">0</span>
+					<span class="counter major" id="majorSecondsCounter">0</span>
 				</div>
 				<div class="level-item">
-					<span class="counter minor">0</span>
+					<span class="counter minor" id="minorSecondsCounter">0</span>
 					<span class="marker">s</span>
 				</div>
 			</div>
+
+			<div class="level progress-container">
+				<progress class="progress is-primary is-small" id="timerProgress" value="0" max="100" style="height: 0.2rem"></progress>
+			</div>
+
+			<div class="level button-container">
+				<div class="level-item">
+					<button class="button is-large" id="timerToggleButton">START</button>
+				</div>
+				<div class="level-item">
+					<button class="button is-large" id="timerResetButton">RESET</button>
+				</div>
+				<input type="text" class="timer-input" id="timeInput" name="timer-input">
+			</div>
 		</div>
 	</section>
-	<!-- <div class="container is-fullwidth">
-		<div class="input-container" id="timers">
-			<span id="major-hours-counter" class="time-counter">0</span><span id="minor-hours-counter" class="time-counter">0</span>
-			<span class="time-marker">h</span>
-			<span id="major-minutes-counter" class="time-counter">0</span><span id="minor-minutes-counter" class="time-counter">0</span>
-			<span class="time-marker">m</span>
-			<span id="major-seconds-counter" class="time-counter">0</span><span id="minor-seconds-counter" class="time-counter">0</span>
-			<span class="time-marker">s</span>
-		</div>
-		<div class="button-container">
-			<button id="startButton">Start</button>
-			<button id="resetButton">Reset</button>
-			<input type="text" class="timer-input" id="timeInput" name="timer-input">
-		</div>
-	</div> -->
 
 	<script type="text/javascript">
 
 		window.onload = function () {
 			var timerContainer = document.getElementById('timerContainer');
 			var timeInput = document.getElementById('timeInput');
-			var timers = document.getElementsByClassName('counters');
-			var markers = document.getElementsByClassName('time-marker');
+			var counters = document.getElementsByClassName('counter');
+			var markers = document.getElementsByClassName('marker');
 
 			timerContainer.addEventListener('click', function () {
-				Array.prototype.forEach.call(timers, function(timer) {
-					timer.classList.add('unsure');
+				Array.prototype.forEach.call(counters, function(counter) {
+					counter.classList.add('unsure');
 				});
 				Array.prototype.forEach.call(markers, function(marker) {
 					marker.classList.add('unsure');
 				});
-				timers[5].classList.add('pointer');
+				counters[5].classList.add('pointer');
 
 				timeInput.focus();
 			});
+
+			var parseCounters = function () {
+				return ((parseInt(majorHoursCounter.innerHTML) * 10 + parseInt(minorHoursCounter.innerHTML)) * 3600
+						+ (parseInt(majorMinutesCounter.innerHTML) * 10 + parseInt(minorMinutesCounter.innerHTML)) * 60
+						+ (parseInt(majorSecondsCounter.innerHTML) * 10 + parseInt(minorSecondsCounter.innerHTML)) + 0.98) * 1000
+			};
 
 
 			timeInput.addEventListener('keydown', function (event) {
@@ -85,96 +90,108 @@
 
 				if(charCode >= 48 && charCode <= 57) {
 					for(var i = 0; i < 5; i ++) {
-						timers[i].innerHTML = timers[i + 1].innerHTML;
+						counters[i].innerHTML = counters[i + 1].innerHTML;
 					}
-					timers[5].innerHTML = char;
+					counters[5].innerHTML = char;
+
+					timerSecondsSet = parseCounters();
+				}
+
+				if(charCode === 8) {
+					for(var i = 5; i > 0; i--) {
+						counters[i].innerHTML = counters[i - 1].innerHTML;
+					}
+					counters[0].innerHTML = 0;
+
+					timerSecondsSet = parseCounters();
 				}
 			});
 
-			var minorSeconds = document.getElementById('minor-seconds-counter');
-			var majorSeconds = document.getElementById('major-seconds-counter');
-			var minorMinutes = document.getElementById('minor-minutes-counter');
-			var majorMinutes = document.getElementById('major-minutes-counter');
-			var minorHours = document.getElementById('minor-hours-counter');
-			var majorHours = document.getElementById('major-hours-counter');
+			var minorSecondsCounter = document.getElementById('minorSecondsCounter');
+			var majorSecondsCounter = document.getElementById('majorSecondsCounter');
+			var minorMinutesCounter = document.getElementById('minorMinutesCounter');
+			var majorMinutesCounter = document.getElementById('majorMinutesCounter');
+			var minorHoursCounter = document.getElementById('minorHoursCounter');
+			var majorHoursCounter = document.getElementById('majorHoursCounter');
 
-			var startButton = document.getElementById('startButton');
+			var started = false;
+			var timerSecondsSet = 0;
+			var timerSecondsElapsed = 0;
+			var startButton = document.getElementById('timerToggleButton');
+			var resetButton = document.getElementById('timerResetButton')
+			var timerProgress = document.getElementById('timerProgress');
 
 			startButton.addEventListener('click', startTimer);
+			resetButton.addEventListener('click', resetTimer);
 
 			var countdownInterval;
 
+			function resetTimer() {
+				clearInterval(countdownInterval);
+				started = false;
+				toggleStartButton();
+				setCounters(timerSecondsSet / 1000);
+				timerSecondsElapsed = 0;
+				timerProgress.setAttribute("value", 0);
+			}
+
 			function startTimer () {
-				countdownInterval = setInterval(function () {
-					decrementSecondsMinor();
-				}, 1000)
+				if(timerSecondsSet > 0) {
+					started = true;
+					toggleStartButton();
+					Array.prototype.forEach.call(counters, function(counter) {
+						counter.classList.remove('unsure');
+					});
+					Array.prototype.forEach.call(markers, function(marker) {
+						marker.classList.remove('unsure');
+					});
+					counters[5].classList.remove('pointer');
+				    
+					countdownInterval = setInterval(function () {
+						timerSecondsElapsed += 20;
+						percentagePassed = ((timerSecondsElapsed + 20) / (timerSecondsSet - 980)) * 100;
+						timerProgress.setAttribute("value", percentagePassed);
+						var timeRemaining = timerSecondsSet - timerSecondsElapsed;
+						if(timeRemaining > 1000) {
+							setCounters(timeRemaining / 1000);
+						} else {
+							setCounters(0);
+							clearInterval(countdownInterval);
+							started = false;
+							timerSecondsElapsed = 0;
+							toggleStartButton();
+						}
+					}, 20)
+				}
 			};
 
-			var decrementSecondsMinor = function () {
-				var secondsValue = parseInt(minorSeconds.innerHTML);
-					console.log(secondsValue);
+			function setCounters(seconds) {
+				majorHoursCounter.innerHTML = Math.floor(seconds / 3600 / 10);
+				minorHoursCounter.innerHTML = Math.floor(seconds / 3600 % 10);
+				seconds = seconds % 3600;
+				majorMinutesCounter.innerHTML = Math.floor(seconds / 60 / 10);
+				minorMinutesCounter.innerHTML = Math.floor(seconds / 60 % 10);
+				seconds = seconds % 60;
+				majorSecondsCounter.innerHTML = Math.floor(seconds / 10);
+				minorSecondsCounter.innerHTML = Math.floor(seconds % 10);
+			};
 
-				if(secondsValue == 0) {
-					decrementSecondsMajor();
-					minorSeconds.innerHTML = "9";
+			function toggleStartButton() {
+				if(started) {
+					startButton.removeEventListener('click', startTimer);
+					startButton.innerHTML = 'STOP';
+					startButton.addEventListener('click', pauseTimer);
 				} else {
-					minorSeconds.innerHTML = secondsValue - 1;
+					startButton.removeEventListener('click', pauseTimer);
+					startButton.innerHTML = 'START';
+					startButton.addEventListener('click', startTimer);
 				}
 			}
 
-			var decrementSecondsMajor = function () {
-				var secondsValue = parseInt(majorSeconds.innerHTML);
-
-				if(secondsValue == 0) {
-					decrementMinutesMinor();
-					majorSeconds.innerHTML = "5";
-				} else {
-					majorSeconds.innerHTML = secondsValue - 1;
-				}
-			}
-
-			var decrementMinutesMinor = function () {
-				var minutesValue = parseInt(minorMinutes.innerHTML);
-
-				if(minutesValue == 0) {
-					decrementMinutesMajor();
-					minorMinutes.innerHTML = "9";
-				} else {
-					minorMinutes.innerHTML = minutesValue - 1;
-				}
-			}
-
-			var decrementMinutesMajor = function () {
-				var minutesValue = parseInt(majorMinutes.innerHTML);
-
-				if(minutesValue == 0) {
-					decrementHoursMinor();
-					majorMinutes.innerHTML = "5";
-				} else {
-					majorMinutes.innerHTML = minutesValue - 1;
-				}
-			}
-
-			var decrementHoursMinor = function () {
-				var hoursValue = parseInt(minorHours.innerHTML);
-
-				if(hoursValue == 0) {
-					decrementHoursMajor();
-					hoursValue.innerHTML = "9";
-				} else {
-					minorHours.innerHTML = hoursValue - 1;
-				}
-			}
-
-			var decrementHoursMajor = function () {
-				var hoursValue = parseInt(majorHours.innerHTML);
-
-				if(hoursValue == 0) {
-					alert('Countdown complete');
-					clearInterval(countdownInterval);
-				} else {
-					majorHours.innerHTML = hoursValue - 1;
-				}
+			function pauseTimer() {
+				started = false;
+				toggleStartButton();
+				clearInterval(countdownInterval);
 			}
 		}
 	</script>
